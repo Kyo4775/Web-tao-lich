@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuyển Đoạn Văn Bản Thành Lịch Google</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chuyển Đoạn Văn Bản Thành Lịch Google</h1>
+    
+    <p>Nhập đoạn văn bản lịch làm việc (ví dụ như lịch làm việc của BIN):</p>
+    <textarea id="scheduleText" rows="10" placeholder="Nhập lịch làm việc vào đây"></textarea>
+    
+    <button onclick="convertToGoogleCalendar()">Chuyển đổi thành Lịch Google</button>
+    
+    <h2>Lịch làm việc BIN:</h2>
+    <ul id="binSchedule">
+        <!-- Các sự kiện BIN sẽ được hiển thị ở đây -->
+    </ul>
+    
+    <script>
+        // Đoạn văn bản mẫu có thể nhập vào
+        const scheduleText = `
+        ☕️Thứ 2 - 25/11/2024
+        6h-12h: BIN
+        12h-18h: DÂU
+
+        ☕️Thứ 3 - 26/11/2024
+        6h-10h: PHỤNG
+        10h-14h: DÂU (trực nhật)
+        14h-18h: BƠ
+
+        ☕️Thứ 4 - 27/11/2024
+        6h-10h: PHỤNG
+        10h-14h: DÂU
+        14h-18h: BIN
+
+        ☕️Thứ 5 - 28/11/2024
+        6h-10h: PHỤNG 
+        10h-14h: BƠ
+        14h-18h : BIN (trực nhật)
+
+        ☕️Thứ 6 - 29/11/2024
+        6h-10h: DÂU
+        10h-14h: PHỤNG
+        14h-18h: BƠ 
+
+        ☕️Thứ 7 - 30/11/2024
+        6h-12h: PHỤNG 
+        12h-17h: DÂU (trực nhật)
+
+        ☕️ Chủ nhật - 1/12/2024
+        6h-13h: BIN 
+        13h-17h: BƠ
+        `;
+        
+        function convertToGoogleCalendar() {
+            const inputText = document.getElementById("scheduleText").value || scheduleText; // Lấy văn bản từ ô nhập liệu
+            const regex = /☕️(.*?)\s*(\d{1,2}\/\d{1,2}\/\d{4})\s*(\d{1,2}h-\d{1,2}h)\s*:\s*BIN/g;
+            const binEvents = [];
+            let match;
+
+            // Tìm tất cả các ca làm BIN trong văn bản
+            while ((match = regex.exec(inputText)) !== null) {
+                const dayOfWeek = match[1].trim();
+                const date = match[2].trim();
+                const time = match[3].trim();
+                
+                binEvents.push({ dayOfWeek, date, time });
+            }
+
+            // Hiển thị lịch làm việc BIN trong danh sách
+            const list = document.getElementById('binSchedule');
+            list.innerHTML = ""; // Xóa danh sách cũ
+            binEvents.forEach(event => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `Ngày: ${event.date}, Ca làm: ${event.time} (${event.dayOfWeek})`;
+                list.appendChild(listItem);
+            });
+
+            // Tạo sự kiện Google Calendar (sử dụng Google Calendar API thực tế)
+            binEvents.forEach(event => {
+                const calendarEvent = {
+                    summary: 'Ca làm BIN',
+                    start: {
+                        dateTime: `2024-${event.date.replace('/', '-')}`,
+                        timeZone: 'Asia/Ho_Chi_Minh'
+                    },
+                    end: {
+                        dateTime: `2024-${event.date.replace('/', '-')}`,
+                        timeZone: 'Asia/Ho_Chi_Minh'
+                    },
+                };
+
+                // Lưu sự kiện vào Google Calendar (API thực tế sẽ cần OAuth 2.0)
+                console.log(calendarEvent);
+            });
+        }
+    </script>
+</body>
+</html>
